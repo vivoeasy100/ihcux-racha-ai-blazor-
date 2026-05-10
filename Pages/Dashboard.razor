@@ -1,0 +1,132 @@
+@page "/dashboard"
+@using RachaAiBlazor.Models
+@using RachaAiBlazor.Shared
+
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Olá, Fernando! 👋</h2>
+            <p class="text-muted">Veja como estão suas finanças coletivas hoje.</p>
+        </div>
+        <button class="btn btn-primary d-none d-md-block px-4 py-2 shadow-sm" style="border-radius: 10px;">
+            <i class="bi bi-plus-lg me-2"></i> Novo Gasto
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-5">
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-primary text-white" style="border-radius: 15px;">
+                <p class="small mb-1 opacity-75">Saldo Geral</p>
+                <h3 class="fw-bold mb-0">R$ @SaldoGeral.ToString("N2")</h3>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="border-radius: 15px;">
+                <p class="small text-muted mb-1">A Receber</p>
+                <h3 class="fw-bold text-success mb-0">R$ @TotalAReceber.ToString("N2")</h3>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="border-radius: 15px;">
+                <p class="small text-muted mb-1">A Pagar</p>
+                <h3 class="fw-bold text-danger mb-0">R$ @TotalAPagar.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="mb-4">
+        <div class="input-group bg-white shadow-sm" style="border-radius: 12px; overflow: hidden;">
+            <span class="input-group-text border-0 bg-white px-3">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" class="form-control border-0 py-3" 
+                   placeholder="Buscar grupo ou categoria..." 
+                   @bind-value="searchTerm" @bind-value:event="oninput" />
+        </div>
+    </div>
+
+    <!-- Groups List -->
+    <div class="groups-section">
+        <h5 class="fw-bold mb-4">SEUS GRUPOS ATIVOS</h5>
+        
+        @if (FilteredGrupos.Any())
+        {
+            <div class="row">
+                @foreach (var grupo in FilteredGrupos)
+                {
+                    <div class="col-12">
+                        <GrupoCard Grupo="grupo" />
+                    </div>
+                }
+            </div>
+        }
+        else if (string.IsNullOrEmpty(searchTerm))
+        {
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-people-fill text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h5>Você ainda não participa de nenhum grupo.</h5>
+                <p class="text-muted">Que tal criar um agora mesmo?</p>
+                <button class="btn btn-outline-primary mt-2">Criar Primeiro Grupo</button>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Nenhum grupo encontrado para "@searchTerm".</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Floating Action Button (FAB) -->
+<div class="fab-container d-md-none">
+    <button class="btn btn-primary btn-lg rounded-circle shadow-lg fab-btn">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+</div>
+
+<style>
+    body {
+        background-color: #f4f7f6;
+    }
+    .fab-container {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 1000;
+    }
+    .fab-btn {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+</style>
+
+@code {
+    private string searchTerm = "";
+    
+    private List<Grupo> grupos = new()
+    {
+        new Grupo { Nome = "República Central", Categoria = "Casa", ValorPendente = 450.50m, NoVermelho = true },
+        new Grupo { Nome = "Churrasco de Domingo", Categoria = "Lazer", ValorPendente = 85.00m, NoVermelho = false },
+        new Grupo { Nome = "Viagem Floripa", Categoria = "Viagem", ValorPendente = 1200.00m, NoVermelho = false },
+        new Grupo { Nome = "Netflix & Internet", Categoria = "Contas", ValorPendente = 35.90m, NoVermelho = true }
+    };
+
+    private IEnumerable<Grupo> FilteredGrupos => 
+        grupos.Where(g => string.IsNullOrWhiteSpace(searchTerm) || 
+                          g.Nome.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || 
+                          g.Categoria.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    private decimal TotalAReceber => grupos.Where(g => !g.NoVermelho).Sum(g => g.ValorPendente);
+    private decimal TotalAPagar => grupos.Where(g => g.NoVermelho).Sum(g => g.ValorPendente);
+    private decimal SaldoGeral => TotalAReceber - TotalAPagar;
+}

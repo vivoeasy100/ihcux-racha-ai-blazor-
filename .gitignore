@@ -1,0 +1,13 @@
+[Bb]in/
+[Oo]bj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.DS_Store
+wwwroot/_framework/
+wwwroot/dist/
+node_modules/
