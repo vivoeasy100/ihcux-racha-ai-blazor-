@@ -23,4 +23,15 @@ Implementamos um **campo de busca em tempo real** que filtra a lista de grupos c
 
 ---
 **Professor:** Daniel Henrique Matos de Paiva  
-**Instituição:** Centro Universitário UNA
+# Adicionar todas as mudanças atuais (incluindo as exclusões locais)
+git add .
+
+# Criar um commit com a versão final e limpa
+git commit -m "Final version: Optimized C# logic and clean structure"
+
+# Forçar o envio para o GitHub, substituindo tudo o que estiver lá
+git push -u origin main --force
+Instituição:** Centro Universitário UNA
+Aluno - Fernando Almeida
+<img width="1373" height="775" alt="image" src="https://github.com/user-attachments/assets/cd8fcb7a-0b7b-466c-a5b7-e886d2e6b7d0" /><img width="1373" height="775" alt="image" src="https://github.com/user-attachments/assets/48bcc195-520e-41e7-a7bc-0517082eb0c8" />
+
