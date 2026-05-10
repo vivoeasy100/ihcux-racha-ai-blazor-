@@ -1,6 +1,5 @@
 @page "/dashboard"
-@using RachaAiBlazor.Models
-@using RachaAiBlazor.Shared
+@inject RachaAiBlazor.Services.GrupoService GrupoService
 
 <div class="container py-4">
     <!-- Header Section -->
@@ -19,19 +18,19 @@
         <div class="col-12 col-md-4">
             <div class="card border-0 shadow-sm p-3 h-100 bg-primary text-white" style="border-radius: 15px;">
                 <p class="small mb-1 opacity-75">Saldo Geral</p>
-                <h3 class="fw-bold mb-0">R$ @SaldoGeral.ToString("N2")</h3>
+                <h3 class="fw-bold mb-0">R$ @GrupoService.GetSaldoGeral().ToString("N2")</h3>
             </div>
         </div>
         <div class="col-6 col-md-4">
             <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="border-radius: 15px;">
                 <p class="small text-muted mb-1">A Receber</p>
-                <h3 class="fw-bold text-success mb-0">R$ @TotalAReceber.ToString("N2")</h3>
+                <h3 class="fw-bold text-success mb-0">R$ @GrupoService.GetTotalAReceber().ToString("N2")</h3>
             </div>
         </div>
         <div class="col-6 col-md-4">
             <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="border-radius: 15px;">
                 <p class="small text-muted mb-1">A Pagar</p>
-                <h3 class="fw-bold text-danger mb-0">R$ @TotalAPagar.ToString("N2")</h3>
+                <h3 class="fw-bold text-danger mb-0">R$ @GrupoService.GetTotalAPagar().ToString("N2")</h3>
             </div>
         </div>
     </div>
@@ -112,21 +111,9 @@
 
 @code {
     private string searchTerm = "";
-    
-    private List<Grupo> grupos = new()
-    {
-        new Grupo { Nome = "República Central", Categoria = "Casa", ValorPendente = 450.50m, NoVermelho = true },
-        new Grupo { Nome = "Churrasco de Domingo", Categoria = "Lazer", ValorPendente = 85.00m, NoVermelho = false },
-        new Grupo { Nome = "Viagem Floripa", Categoria = "Viagem", ValorPendente = 1200.00m, NoVermelho = false },
-        new Grupo { Nome = "Netflix & Internet", Categoria = "Contas", ValorPendente = 35.90m, NoVermelho = true }
-    };
 
     private IEnumerable<Grupo> FilteredGrupos => 
-        grupos.Where(g => string.IsNullOrWhiteSpace(searchTerm) || 
+        GrupoService.GetGrupos().Where(g => string.IsNullOrWhiteSpace(searchTerm) || 
                           g.Nome.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || 
                           g.Categoria.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-
-    private decimal TotalAReceber => grupos.Where(g => !g.NoVermelho).Sum(g => g.ValorPendente);
-    private decimal TotalAPagar => grupos.Where(g => g.NoVermelho).Sum(g => g.ValorPendente);
-    private decimal SaldoGeral => TotalAReceber - TotalAPagar;
 }
